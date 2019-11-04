@@ -1,115 +1,146 @@
 var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
-var ctxC = canvas.getContext("2d");
+var ctxT = canvas.getContext("2d");
+var ctxS = canvas.getContext("2d");
 var canvasMouseX;
 var canvasMouseY;
 var canvasOffset = $("#canvas").offset();
 var offsetX = canvasOffset.left;
 var offsetY = canvasOffset.top;
 var canvasHeight = canvas.height;
-var centerX = parseInt(0.5 * canvas.width);
+var canvasCenterX = parseInt(0.5 * canvas.width);
 
 var storedLines = [];
 var storedLinesC = [];
-var startX = 0;
-var startY = 0;
 var radius = 14;
-ctx.strokeStyle = "orange";
-ctx.font = '12px Arial';
-ctxC.strokeStyle = "blue";
-ctxC.font = '12px Arial';
-
-var isDragging = false;
+var circumscribedRadius = 150;
+ctxT.strokeStyle = "blue";
+ctxT.font = '12px Arial';
+ctxS.strokeStyle = "orange";
+ctxS.font = '12px Arial';
 
 // Initial triangle
 storedLines.push({
-  x: 196,
-  y: 297
+  x: canvasCenterX * 0.5 + circumscribedRadius * Math.cos(7 * Math.PI / 6),
+  y: canvasHeight * 0.5 - circumscribedRadius * Math.sin(7 * Math.PI / 6)
 });
 storedLines.push({
-  x: 368,
-  y: 92
+  x: canvasCenterX * 0.5 + circumscribedRadius * Math.cos(Math.PI / 6),
+  y: canvasHeight * 0.5 + circumscribedRadius * Math.sin(Math.PI / 6)
 });
 storedLines.push({
-  x: 211,
-  y: 123
+  x: canvasCenterX * 0.5,
+  y: canvasHeight * 0.5 - circumscribedRadius
 });
 
 // get mirrored triangle
-function mirrorOriginal() {
+function rotateOriginal(angle) {
   storedLinesC = []; // reset array
   for(var i = 0; i < storedLines.length; i++) {
     storedLinesC.push({
-      x: storedLines[i].x + 2 * (centerX - storedLines[i].x),
-      y: storedLines[i].y
+      x: Math.cos(angle) * (storedLines[i].x - canvasCenterX * 0.5) - Math.sin(angle) * (storedLines[i].y - canvasHeight * 0.5) + canvasCenterX * 0.5,
+      y: Math.sin(angle) * (storedLines[i].x - canvasCenterX * 0.5) - Math.cos(angle) * (storedLines[i].y - canvasHeight * 0.5) + canvasHeight * 0.5
     });
   }
 }
 
 // reset view = clear, draw separator, calculate copy, draw triangles
 function resetView() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxC.clearRect(0, 0, canvas.width, canvas.height);
+  ctxT.clearRect(0, 0, canvas.width, canvas.height);
   // Center line
-  ctxC.strokeStyle = "black";
-  ctxC.lineWidth = 1;
-  ctxC.beginPath();
-  ctxC.moveTo(centerX, 0);
-  ctxC.lineTo(centerX, canvasHeight);
-  ctxC.stroke();
-
-  // calculate copies
-  mirrorOriginal();
+  addDashedLine(canvasCenterX, 0, canvasCenterX, canvasHeight, ctxT, "black");
   // plot triangles
-  fillPolyline();
-  // fill points
-  fillPoints();
-}
-
-// adds points
-function fillPoints() {
-  for(var i = 0; i < storedLines.length; i++){
-    point(storedLines[i].x, storedLines[i].y, ctx, "blue");
-    point(storedLinesC[i].x, storedLines[i].y, ctxC, "red");
-  }
+  fillPolyline(storedLines, "blue", ctxT);
+  // center point
+  point(canvasCenterX * 0.5, canvasHeight * 0.5, ctxT, "yellow");
 }
 
 // point definiton
 function point(x, y, canvas, color){
+  canvas.fillStyle = color;
   canvas.strokeStyle = color;
   canvas.beginPath();
-  canvas.arc(x, y, 2, 0, 2 * Math.PI, true);
+  canvas.arc(x, y, 3, 0, 2 * Math.PI, true);
+  canvas.closePath();
+  canvas.fill();
+}
+
+function addText(text, x, y, canvas, color, fontSize){
+  canvas.fillStyle = color;
+  canvas.font = fontSize + 'px Arial';
+  canvas.fillText(text, x, y);
+  canvas.closePath();
+  canvas.stroke();
+}
+
+function addDashedLine(xFrom, yFrom, xTo, yTo, canvas, color){
+  canvas.strokeStyle = color;
+  canvas.lineWidth = 2;
+  canvas.beginPath();
+  canvas.setLineDash([5, 10]);
+  canvas.moveTo(xFrom, yFrom);
+  canvas.lineTo(xTo, yTo);
+  canvas.closePath();
+  canvas.stroke();
+}
+
+function addLine(xFrom, yFrom, xTo, yTo, canvas, color){
+  canvas.strokeStyle = color;
+  canvas.lineWidth = 2;
+  canvas.beginPath();
+  canvas.setLineDash([0]);
+  canvas.moveTo(xFrom, yFrom);
+  canvas.lineTo(xTo, yTo);
+  canvas.closePath();
   canvas.stroke();
 }
 
 // adds polygonal sides
-function fillPolyline() {
-  var c = storedLines.length - 1;
-  ctx.strokeStyle = "orange";
+function fillPolyline(points, color, ctx) {
+  ctx.fillStyle = color;
   ctx.lineWidth = 3;
-  for(var i = 0; i < storedLines.length - 1; i++){
-    ctx.beginPath();
-    ctx.moveTo(storedLines[i].x, storedLines[i].y);
-    ctx.lineTo(storedLines[i + 1].x, storedLines[i + 1].y);
-    ctx.stroke();
-  }
   ctx.beginPath();
-  ctx.moveTo(storedLines[c].x, storedLines[c].y);
-  ctx.lineTo(storedLines[0].x, storedLines[0].y);
-  ctx.stroke();
-
-  ctxC.strokeStyle = "blue";
-  ctxC.lineWidth = 3;
-  for(var i = 0; i < storedLines.length - 1; i++){
-    ctxC.beginPath();
-    ctxC.moveTo(storedLinesC[i].x, storedLinesC[i].y);
-    ctxC.lineTo(storedLinesC[i + 1].x, storedLinesC[i + 1].y);
-    ctxC.stroke();
+  ctx.moveTo(points[0].x, points[0].y);
+  for (var i = 0; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
   }
-  ctxC.beginPath();
-  ctxC.moveTo(storedLinesC[c].x, storedLinesC[c].y);
-  ctxC.lineTo(storedLinesC[0].x, storedLinesC[0].y);
-  ctxC.stroke();
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawReflection(e, x, y){
+  resetView();
+  canvasMouseX = parseInt(e.clientX - offsetX);
+  canvasMouseY = parseInt(e.clientY - offsetY);
+
+  // if corner hit, draw its refelection
+  var indexHit = hitPoint();
+  if (indexHit != -1){
+    rotateOriginal(0);
+    fillPolyline(storedLinesC, "rgba(0, 0, 255, 0.3)", ctxT);
+    fillPolyline(storedLines, "blue", ctxT);
+  }
+  // mirror point over center
+  var rX, ry;
+  rX = canvasCenterX * 0.5 + (canvasCenterX * 0.5 - x);
+  rY = canvasHeight * 0.5 + (canvasHeight * 0.5 - y);
+
+  // add line over the two points
+  addDashedLine(x, y, rX, rY, ctxT, "orange")
+  point(rX, rY, ctxT, "orange");
+  addText("T'", rX, rY, ctxT, "orange", 30);
+
+  // add line paralel to it
+  var nX, nY;
+  nx = -(y - canvasHeight * 0.5);
+  ny = x - canvasCenterX * 0.5;
+  addLine(nx + canvasCenterX * 0.5, ny+ canvasHeight * 0.5, -nx + canvasCenterX * 0.5, -ny+ canvasHeight * 0.5, ctxT, "black");
+
+  // original point
+  point(x, y, ctxT, "orange");
+  addText("T", x, y, ctxT, "orange", 30);
+  // center point
+  point(canvasCenterX * 0.5, canvasHeight * 0.5, ctxT, "yellow");
+  point(x, y, ctxT, "orange");
 }
 
 // loads initial state
@@ -123,40 +154,15 @@ function handleMouseDown(e) {
 
   // Check if node hit
   var indexHit = hitPoint();
-  console.log(indexHit);
   if (indexHit != -1){
-    isDragging = true;
+    // not hit
+    drawReflection(e, storedLines[indexHit].x, storedLines[indexHit].y);
   }
-}
-function handleMouseMove(e) {
-  if (isDragging){
-
-    canvasMouseX = parseInt(e.clientX - offsetX);
-    canvasMouseY = parseInt(e.clientY - offsetY);
-
-    // Check for right node
-    var indexHit = hitPoint();
-    if (indexHit != -1) {
-      storedLines[indexHit].x = canvasMouseX;
-      storedLines[indexHit].y = canvasMouseY;
-    };
-    resetView();
+  else {
+    drawReflection(e, canvasMouseX, canvasMouseY);
   }
 }
 
-function handleMouseUp(e) {
-  canvasMouseX = parseInt(e.clientX - offsetX);
-  canvasMouseY = parseInt(e.clientY - offsetY);
-
-  var indexHit = hitPoint();
-  if (indexHit != -1) {
-    storedLines[indexHit].x = canvasMouseX;
-    storedLines[indexHit].y = canvasMouseY;
-  };
-  resetView();
-  // reset isDragging
-  isDragging = false;
-}
 
 // checks if point is hit
 function hitPoint() {
@@ -173,11 +179,8 @@ function hitPoint() {
 }
 
 $("#canvas").mousedown(function(e) {handleMouseDown(e);});
-$("#canvas").mousemove(function(e){handleMouseMove(e);});
-$("#canvas").mouseup(function(e){handleMouseUp(e);});
 
 $("#clear").click(function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxC.clearRect(0, 0, canvas.width, canvas.height);
+  ctxT.clearRect(0, 0, canvas.width, canvas.height);
   resetView()
 });
