@@ -11,6 +11,7 @@ var canvasCenterX = parseInt(0.5 * canvas.width);
 
 var storedLines = [];
 var storedLinesC = [];
+var polygon = [];
 var radius = 14;
 var circumscribedRadius = 150;
 ctxT.strokeStyle = "blue";
@@ -42,6 +43,25 @@ function rotateOriginal(angle) {
     });
   }
 }
+
+function inside(point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+    var x = point[0], y = point[1];
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+};
 
 // reset view = clear, draw separator, calculate copy, draw triangles
 function resetView() {
@@ -146,21 +166,29 @@ function drawReflection(e, x, y){
 // loads initial state
 window.onload = function() {
   resetView();
+  // form array of points
+  polygon = [];
+  for (var i = 0; i < storedLines.length; i++) {
+    polygon.push([storedLines[i].x, storedLines[i].y]);
+  }
 };
 
 function handleMouseDown(e) {
   canvasMouseX = parseInt(e.clientX - offsetX);
   canvasMouseY = parseInt(e.clientY - offsetY);
+  var p = [canvasMouseX, canvasMouseY];
 
-  // Check if node hit
-  var indexHit = hitPoint();
-  if (indexHit != -1){
-    // not hit
-    drawReflection(e, storedLines[indexHit].x, storedLines[indexHit].y);
-  }
-  else {
-    drawReflection(e, canvasMouseX, canvasMouseY);
-  }
+  //if (inside(p, polygon) ==  true) {
+    // Check if node hit
+    var indexHit = hitPoint();
+    if (indexHit != -1){
+      // not hit
+      drawReflection(e, storedLines[indexHit].x, storedLines[indexHit].y);
+    }
+    else {
+      drawReflection(e, canvasMouseX, canvasMouseY);
+    }
+  //}
 }
 
 
