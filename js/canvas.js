@@ -19,6 +19,10 @@ ctxT.font = '12px Arial';
 ctxS.strokeStyle = "orange";
 ctxS.font = '12px Arial';
 
+var storedQuad = [];
+var quadSideX = 230;
+var quadSideY = 120;
+
 // Initial triangle
 storedLines.push({
   x: canvasCenterX * 0.5 + circumscribedRadius * Math.cos(7 * Math.PI / 6),
@@ -31,6 +35,24 @@ storedLines.push({
 storedLines.push({
   x: canvasCenterX * 0.5,
   y: canvasHeight * 0.5 - circumscribedRadius
+});
+
+// initial quadrilateral
+storedQuad.push({
+  x: canvasCenterX * 1.5 - quadSideX * 0.5,
+  y: canvasHeight * 0.5 + quadSideY * 0.5
+});
+storedQuad.push({
+  x: canvasCenterX * 1.5 + quadSideX * 0.5,
+  y: canvasHeight * 0.5 + quadSideY * 0.5
+});
+storedQuad.push({
+  x: canvasCenterX * 1.5 + quadSideX * 0.5,
+  y: canvasHeight * 0.5 - quadSideY * 0.5
+});
+storedQuad.push({
+  x: canvasCenterX * 1.5 - quadSideX * 0.5,
+  y: canvasHeight * 0.5 - quadSideY * 0.5
 });
 
 // get mirrored triangle
@@ -65,7 +87,7 @@ function inside(point, vs) {
 
 // reset view = clear, draw separator, calculate copy, draw triangles
 function resetView() {
-  ctxT.clearRect(0, 0, canvas.width, canvas.height);
+  ctxT.clearRect(0, 0, canvas.width * 0.5, canvas.height);
   // Center line
   addDashedLine(canvasCenterX, 0, canvasCenterX, canvasHeight, ctxT, "black");
   // plot triangles
@@ -127,13 +149,45 @@ function fillPolyline(points, color, ctx) {
   ctx.fill();
 }
 
+function drawReflectionOnQuad(e, x, y) {
+  // clear plot and redraw polygon
+  ctxT.clearRect(canvasCenterX, 0, canvas.width, canvas.height);
+  fillPolyline(storedQuad, "blue", ctxT);
+
+  // current mouse click position
+  canvasMouseX = parseInt(e.clientX - offsetX);
+  canvasMouseY = parseInt(e.clientY - offsetY);
+
+  // mirror point over center
+  var rX, ry;
+  rX = canvasCenterX * 1.5 + (canvasCenterX * 1.5 - x);
+  rY = canvasHeight * 0.5 + (canvasHeight * 0.5 - y);
+
+  // add line over the two points
+  addDashedLine(x, y, rX, rY, ctxT, "orange")
+  point(rX, rY, ctxT, "orange");
+  addText("T'", rX, rY, ctxT, "orange", 30);
+
+  // add line paralel to it
+  var nX, nY;
+  nx = -(y - canvasHeight * 0.5);
+  ny = x - canvasCenterX * 1.5;
+  addLine(nx + canvasCenterX * 1.5, ny+ canvasHeight * 0.5, -nx + canvasCenterX * 1.5, -ny+ canvasHeight * 0.5, ctxT, "black");
+
+  // original point
+  point(x, y, ctxT, "orange");
+  addText("T", x, y, ctxT, "orange", 30);
+  // center point
+  point(canvasCenterX * 1.5, canvasHeight * 0.5, ctxT, "yellow");
+}
+
 function drawReflection(e, x, y){
   resetView();
   canvasMouseX = parseInt(e.clientX - offsetX);
   canvasMouseY = parseInt(e.clientY - offsetY);
 
   // if corner hit, draw its refelection
-  var indexHit = hitPoint();
+  var indexHit = hitPoint(storedLines);
   if (indexHit != -1){
     rotateOriginal(0);
     fillPolyline(storedLinesC, "rgba(0, 0, 255, 0.3)", ctxT);
@@ -170,7 +224,11 @@ window.onload = function() {
   polygon = [];
   for (var i = 0; i < storedLines.length; i++) {
     polygon.push([storedLines[i].x, storedLines[i].y]);
-  }
+  };
+  // draw quad
+  fillPolyline(storedQuad, "blue", ctxT)
+  // draw center on quad
+  point(canvasCenterX * 1.5, canvasHeight * 0.5, ctxT, "yellow");
 };
 
 function handleMouseDown(e) {
@@ -178,26 +236,39 @@ function handleMouseDown(e) {
   canvasMouseY = parseInt(e.clientY - offsetY);
   var p = [canvasMouseX, canvasMouseY];
 
-  //if (inside(p, polygon) ==  true) {
-    // Check if node hit
-    var indexHit = hitPoint();
+  if (canvasMouseX >= canvasCenterX) {
+    // Quadrilateral area!
+    var indexHit = hitPoint(storedQuad);
     if (indexHit != -1){
       // not hit
-      drawReflection(e, storedLines[indexHit].x, storedLines[indexHit].y);
+    drawReflectionOnQuad(e, storedQuad[indexHit].x, storedQuad[indexHit].y);
     }
     else {
-      drawReflection(e, canvasMouseX, canvasMouseY);
+      drawReflectionOnQuad(e, canvasMouseX, canvasMouseY);
     }
-  //}
+  } else {
+    // triangle area
+    //if (inside(p, polygon) ==  true) {
+      // Check if node hit
+      var indexHit = hitPoint(storedLines);
+      if (indexHit != -1){
+        // not hit
+        drawReflection(e, storedLines[indexHit].x, storedLines[indexHit].y);
+      }
+      else {
+        drawReflection(e, canvasMouseX, canvasMouseY);
+      }
+    //}
+  }
 }
 
 
 // checks if point is hit
-function hitPoint() {
+function hitPoint(pointArray) {
   var dx, dy;
-  for(var i = 0; i < storedLines.length; i++){
-    dx = canvasMouseX - storedLines[i].x;
-    dy = canvasMouseY - storedLines[i].y;
+  for(var i = 0; i < pointArray.length; i++){
+    dx = canvasMouseX - pointArray[i].x;
+    dy = canvasMouseY - pointArray[i].y;
 
     if (radius * radius > dx * dx + dy * dy) {
       return i;
@@ -211,4 +282,8 @@ $("#canvas").mousedown(function(e) {handleMouseDown(e);});
 $("#clear").click(function() {
   ctxT.clearRect(0, 0, canvas.width, canvas.height);
   resetView()
+  // draw quad
+  fillPolyline(storedQuad, "blue", ctxT)
+  // draw center on quad
+  point(canvasCenterX * 1.5, canvasHeight * 0.5, ctxT, "yellow");
 });
