@@ -149,6 +149,7 @@ function fillPolyline(points, color, ctx) {
   ctx.fill();
 }
 
+
 function drawReflectionOnQuad(e, x, y) {
   // clear plot and redraw polygon
   ctxT.clearRect(canvasCenterX, 0, canvas.width, canvas.height);
