@@ -169,17 +169,13 @@ function drawReflectionOnQuad(e, x, y) {
   point(rX, rY, ctxT, "orange");
   addText("T'", rX, rY, ctxT, "orange", 30);
 
-  // add line paralel to it
-  var nX, nY;
-  nx = -(y - canvasHeight * 0.5);
-  ny = x - canvasCenterX * 1.5;
-  addLine(nx + canvasCenterX * 1.5, ny+ canvasHeight * 0.5, -nx + canvasCenterX * 1.5, -ny+ canvasHeight * 0.5, ctxT, "black");
-
   // original point
   point(x, y, ctxT, "orange");
   addText("T", x, y, ctxT, "orange", 30);
   // center point
   point(canvasCenterX * 1.5, canvasHeight * 0.5, ctxT, "yellow");
+  // Center line
+  addDashedLine(canvasCenterX, 0, canvasCenterX, canvasHeight, ctxT, "black");
 }
 
 function drawReflection(e, x, y){
@@ -203,12 +199,6 @@ function drawReflection(e, x, y){
   addDashedLine(x, y, rX, rY, ctxT, "orange")
   point(rX, rY, ctxT, "orange");
   addText("T'", rX, rY, ctxT, "orange", 30);
-
-  // add line paralel to it
-  var nX, nY;
-  nx = -(y - canvasHeight * 0.5);
-  ny = x - canvasCenterX * 0.5;
-  addLine(nx + canvasCenterX * 0.5, ny+ canvasHeight * 0.5, -nx + canvasCenterX * 0.5, -ny+ canvasHeight * 0.5, ctxT, "black");
 
   // original point
   point(x, y, ctxT, "orange");
