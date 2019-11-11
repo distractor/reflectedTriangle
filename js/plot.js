@@ -73,7 +73,7 @@ function addText(text, position, canvas, color, fontSize){
 }
 
 function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
-  s = new Vector(0, 1);
+  var s = reflectOver;
   r0 = canvasCenterA;
 
   var t = (dotProduct(nodePos, s) - dotProduct(r0,s)) / vectorLength(s);
@@ -81,9 +81,20 @@ function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
   closest = addVector(r0, scalarProduct(s, t));
   copy = addVector(closest, addVector(closest, scalarProduct(nodePos, -1)));
   addPoint(closest, canvas, color, pointSize);
-  addDashedLine(copy, nodePos, canvas, color, 2);
+  addDashedLine(movePointToGlobalOrigin(copy), movePointToGlobalOrigin(nodePos), canvas, color, 2);
   addPoint(nodePos, canvas, color, pointSize);
   addPoint(copy, canvas, color, pointSize);
+  addText("T", nodePos, canvas, color, 30);
+  addText("T'", copy, canvas, color, 30);
+
+  // add symmetry axis
+  a = addVector(canvasCenterA, scalarProduct(reflectOver, 400));
+  b = addVector(canvasCenterA, scalarProduct(reflectOver, -400));
+
+  a = movePointToGlobalOrigin(a);
+  b = movePointToGlobalOrigin(b);
+  addDashedLine(a, b, canvas, "black", 2);
+  addPoint(canvasCenterA, canvas, "yellow", pointSize);
 }
 
 function clearCanvas() {
@@ -119,6 +130,9 @@ function addPolygon(reflect = false) {
   node = new Vector(node.x + top, node.y)
   nodeArray.push(node);
 
+  side = addVector(nodeArray[0], scalarProduct(nodeArray[3], -1));
+  reflectOver = new Vector(side.x / vectorLength(side), side.y / vectorLength(side));
+
   // Translate to center
   for(var i = 0; i< nodeArray.length; i++)
     nodeArray[i] = addVector(nodeArray[i], canvasCenter);
@@ -138,6 +152,7 @@ function addKite(reflect = false) {
   var kiteWidth = 110; // total width
   var h1 = 70;         // top node
   var h2 = 130;        // bottom node
+  reflectOver = new Vector(0, 1);
 
   nodeArray = [];
 
@@ -167,6 +182,7 @@ function addKite(reflect = false) {
 
 function addRectangle(reflect = false) {
   currentObject = "Rectangle";
+  reflectOver = new Vector(0, 1);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
@@ -199,6 +215,7 @@ function addRectangle(reflect = false) {
 
 function addTriangle(reflect = false) {
   currentObject = "Triangle";
+  reflectOver = new Vector(0, 1);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 

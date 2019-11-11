@@ -9,11 +9,11 @@ var canvasOffsetA = $("#canAxis").offset();
 var offsetX = canvasOffset.left;
 var offsetY = canvasOffset.top;
 var canvasHeight = canvas.height;
-canvasCenter = new Vector(canvas.width * 0.5, -canvasHeight * 0.5)
+canvasCenter = new Vector(canvas.width * 0.5, -canvasHeight * 0.5);
 var offsetAX = canvasOffsetA.left;
 var offsetAY = canvasOffsetA.top;
 var canvasHeightA = canvasA.height;
-canvasCenterA = new Vector(canvasA.width * 0.5, -canvasHeightA * 0.5)
+canvasCenterA = new Vector(canvasA.width * 0.5, -canvasHeightA * 0.5);
 
 var blue = "rgba(0, 0, 255, 1.0)";
 var lightBlue = "rgba(0, 0, 255, 0.3)";
@@ -26,6 +26,7 @@ var nodes;
 var nodeArray = [];
 var currentObject = "";
 var radius = 8;
+var reflectOver = new Vector(0, 1);
 
 // Handle mouse down
 function handleMouseDown(e) {
@@ -65,7 +66,7 @@ function handleMouseDown(e) {
   addReflectionLine(mousePos, ctx, "orange", 2);
   // add center point
   addPoint(canvasCenter, ctx, "yellow", pointSize);
-
+  // axis reflection
   addAxisSymmetry(mousePos, ctxA, "orange", pointSize, 2);
 }
 
