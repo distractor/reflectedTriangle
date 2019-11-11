@@ -72,13 +72,29 @@ function addText(text, position, canvas, color, fontSize){
   canvas.stroke();
 }
 
+function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
+  s = new Vector(0, 1);
+  r0 = canvasCenterA;
+
+  var t = (dotProduct(nodePos, s) - dotProduct(r0,s)) / vectorLength(s);
+
+  closest = addVector(r0, scalarProduct(s, t));
+  copy = addVector(closest, addVector(closest, scalarProduct(nodePos, -1)));
+  addPoint(closest, canvas, color, pointSize);
+  addDashedLine(copy, nodePos, canvas, color, 2);
+  addPoint(nodePos, canvas, color, pointSize);
+  addPoint(copy, canvas, color, pointSize);
+}
+
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 }
 
 function addPolygon(reflect = false) {
   currentObject = "Polygon";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   var diagonal = 220;
   var top = 150;
@@ -111,11 +127,14 @@ function addPolygon(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
+  addObject([...nodeArray], blue, ctxA);
 }
 
 function addKite(reflect = false) {
   currentObject = "Kite";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
+
   var kiteWidth = 110; // total width
   var h1 = 70;         // top node
   var h2 = 130;        // bottom node
@@ -143,11 +162,13 @@ function addKite(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
+  addObject([...nodeArray], blue, ctxA);
 }
 
 function addRectangle(reflect = false) {
   currentObject = "Rectangle";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
   var rectangleSize = 100;
@@ -173,11 +194,13 @@ function addRectangle(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
+  addObject([...nodeArray], blue, ctxA);
 }
 
 function addTriangle(reflect = false) {
   currentObject = "Triangle";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
   var triangleSize = 100;
@@ -206,4 +229,5 @@ function addTriangle(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
+  addObject([...nodeArray], blue, ctxA);
 }

@@ -1,12 +1,19 @@
 var canvas = document.getElementById("canv");
+var canvasA = document.getElementById("canAxis");
 var ctx = canvas.getContext("2d");
+var ctxA = canvasA.getContext("2d");
 var canvasMouseX;
 var canvasMouseY;
 var canvasOffset = $("#canv").offset();
+var canvasOffsetA = $("#canAxis").offset();
 var offsetX = canvasOffset.left;
 var offsetY = canvasOffset.top;
 var canvasHeight = canvas.height;
 canvasCenter = new Vector(canvas.width * 0.5, -canvasHeight * 0.5)
+var offsetAX = canvasOffsetA.left;
+var offsetAY = canvasOffsetA.top;
+var canvasHeightA = canvasA.height;
+canvasCenterA = new Vector(canvasA.width * 0.5, -canvasHeightA * 0.5)
 
 var blue = "rgba(0, 0, 255, 1.0)";
 var lightBlue = "rgba(0, 0, 255, 0.3)";
@@ -58,6 +65,8 @@ function handleMouseDown(e) {
   addReflectionLine(mousePos, ctx, "orange", 2);
   // add center point
   addPoint(canvasCenter, ctx, "yellow", pointSize);
+
+  addAxisSymmetry(mousePos, ctxA, "orange", pointSize, 2);
 }
 
 // Handle function

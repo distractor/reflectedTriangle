@@ -38,3 +38,7 @@ function nodeHit(currentPos) {
 function vectorLength(v) {
   return Math.sqrt(v.x * v.x + v.y * v.y)
 }
+
+function dotProduct(v1, v2) {
+  return v1.x * v2.x + v1.y * v2.y;
+}
