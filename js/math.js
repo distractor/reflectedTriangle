@@ -22,3 +22,19 @@ function scalarProduct(r, alpha) {
 function addVector(v1, v2) {
   return new Vector(v1.x + v2.x, v1.y + v2.y);
 }
+
+function nodeHit(currentPos) {
+  var index = -1;
+  for(var i = 0; i < nodeArray.length; i++){
+    var diff = addVector(currentPos, scalarProduct(nodeArray[i], -1));
+    if (vectorLength(diff) < radius) {
+      index = i;
+      break;
+    }
+  }
+  return index;
+}
+
+function vectorLength(v) {
+  return Math.sqrt(v.x * v.x + v.y * v.y)
+}
