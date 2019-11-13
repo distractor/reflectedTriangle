@@ -48,8 +48,8 @@ function addReflectionLine(mousePosition, canvas, color, lineWidth){
   addPoint(mousePosition, canvas, color, pointSize);
   addPoint(v, canvas, color, pointSize);
   // text
-  addText("T", mousePosition, ctx, "orange", 30);
-  addText("T'", v, ctx, "orange", 30);
+  addText("T", mousePosition, canvas, fontColor, fontSize);
+  addText("T'", v, canvas, fontColor, fontSize);
 }
 
 function addDashedLine(vFrom, vTo, canvas, color, lineWidth){
@@ -84,8 +84,8 @@ function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
   addDashedLine(movePointToGlobalOrigin(copy), movePointToGlobalOrigin(nodePos), canvas, color, 2);
   addPoint(nodePos, canvas, color, pointSize);
   addPoint(copy, canvas, color, pointSize);
-  addText("T", nodePos, canvas, color, 30);
-  addText("T'", copy, canvas, color, 30);
+  addText("T", nodePos, canvas, fontColor, fontSize);
+  addText("T'", copy, canvas, fontColor, fontSize);
 
   // add symmetry axis
   a = addVector(canvasCenterA, scalarProduct(reflectOver, 400));
@@ -93,8 +93,8 @@ function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
 
   a = movePointToGlobalOrigin(a);
   b = movePointToGlobalOrigin(b);
-  addDashedLine(a, b, canvas, "black", 2);
-  addPoint(canvasCenterA, canvas, "yellow", pointSize);
+  addDashedLine(a, b, canvas, black, lineThickness);
+  addPoint(canvasCenterA, canvas, yellow, pointSize);
 }
 
 function clearCanvas() {
@@ -106,10 +106,6 @@ function addPolygon(reflect = false) {
   currentObject = "Polygon";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
-
-  var diagonal = 220;
-  var top = 150;
-  var angle = Math.PI / 6;
 
   nodeArray = [];
 
@@ -149,9 +145,6 @@ function addKite(reflect = false) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
-  var kiteWidth = 110; // total width
-  var h1 = 70;         // top node
-  var h2 = 130;        // bottom node
   reflectOver = new Vector(0, 1);
 
   nodeArray = [];
@@ -187,8 +180,6 @@ function addRectangle(reflect = false) {
   ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
-  var rectangleSize = 100;
-  var recHeight = 0.65;
 
   // first node
   node = new Vector(rectangleSize, recHeight * rectangleSize);
@@ -220,7 +211,6 @@ function addTriangle(reflect = false) {
   ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
-  var triangleSize = 100;
 
   // first node
   node = new Vector(1, 0);

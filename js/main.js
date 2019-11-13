@@ -15,9 +15,6 @@ var offsetAY = canvasOffsetA.top;
 var canvasHeightA = canvasA.height;
 canvasCenterA = new Vector(canvasA.width * 0.5, -canvasHeightA * 0.5);
 
-var blue = "rgba(0, 0, 255, 1.0)";
-var lightBlue = "rgba(0, 0, 255, 0.3)";
-var pointSize = 4;
 ctx.strokeStyle = blue;
 
 var canvasOrigin = new Vector(0, canvasHeight);
@@ -63,11 +60,11 @@ function handleMouseDown(e) {
   }
 
   // add mirroring line
-  addReflectionLine(mousePos, ctx, "orange", 2);
+  addReflectionLine(mousePos, ctx, orange, lineThickness);
   // add center point
-  addPoint(canvasCenter, ctx, "yellow", pointSize);
+  addPoint(canvasCenter, ctx, yellow, pointSize);
   // axis reflection
-  addAxisSymmetry(mousePos, ctxA, "orange", pointSize, 2);
+  addAxisSymmetry(mousePos, ctxA, orange, pointSize, lineThickness);
 }
 
 // Handle function
