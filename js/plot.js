@@ -111,19 +111,19 @@ function addPolygon(reflect = false) {
 
   // first node
   node = new Vector(1, 0);
-  node = rotate(node, angle);
+  node = rotate(node, angleDiag);
   node = scalarProduct(node, diagonal * 0.5);
   nodeArray.push(node);
   // second node
-  node = new Vector(node.x - top, node.y)
+  node = new Vector(node.x - topSide, node.y)
   nodeArray.push(node);
   // third array
   node = new Vector(1, 0);
-  node = rotate(node, angle);
+  node = rotate(node, angleDiag);
   node = scalarProduct(node, -diagonal * 0.5);
   nodeArray.push(node);
   // forth array
-  node = new Vector(node.x + top, node.y)
+  node = new Vector(node.x + topSide, node.y)
   nodeArray.push(node);
 
   side = addVector(nodeArray[0], scalarProduct(nodeArray[3], -1));

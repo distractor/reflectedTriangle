@@ -19,5 +19,5 @@ var h1 = 70;         // top node
 var h2 = 130;        // bottom node
 // polygon
 var diagonal = 220;
-var top = 150;
-var angle = Math.PI / 6; // angle between horizontal line and diagonal
+var topSide = 150;
+var angleDiag = Math.PI / 6; // angle between horizontal line and diagonal
