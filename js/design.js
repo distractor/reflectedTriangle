@@ -1,6 +1,6 @@
 var blue = "rgba(0, 0, 255, 1.0)";
 var lightBlue = "rgba(0, 0, 255, 0.3)";
-var orange = "red"
+var orange = "orange"
 var pointSize = 4;
 var lineThickness = 2;
 var yellow = "yellow";

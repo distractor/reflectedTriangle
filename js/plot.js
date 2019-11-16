@@ -45,10 +45,8 @@ function addReflectionLine(mousePosition, canvas, color, lineWidth){
   // dashed line
   addDashedLine(movePointToGlobalOrigin(mousePosition), movePointToGlobalOrigin(v), canvas, color, lineWidth);
   // points
-  addPoint(mousePosition, canvas, color, pointSize);
   addPoint(v, canvas, color, pointSize);
   // text
-  addText("T", mousePosition, canvas, fontColor, fontSize);
   addText("T'", v, canvas, fontColor, fontSize);
 }
 
@@ -74,7 +72,7 @@ function addText(text, position, canvas, color, fontSize){
 
 function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
   var s = reflectOver;
-  r0 = canvasCenterA;
+  r0 = canvasCenter;
 
   var t = (dotProduct(nodePos, s) - dotProduct(r0,s)) / vectorLength(s);
 
@@ -82,30 +80,26 @@ function addAxisSymmetry(nodePos, canvas, color, pointSize, lineWidth){
   copy = addVector(closest, addVector(closest, scalarProduct(nodePos, -1)));
   addPoint(closest, canvas, color, pointSize);
   addDashedLine(movePointToGlobalOrigin(copy), movePointToGlobalOrigin(nodePos), canvas, color, 2);
-  addPoint(nodePos, canvas, color, pointSize);
   addPoint(copy, canvas, color, pointSize);
-  addText("T", nodePos, canvas, fontColor, fontSize);
   addText("T'", copy, canvas, fontColor, fontSize);
 
   // add symmetry axis
-  a = addVector(canvasCenterA, scalarProduct(reflectOver, 400));
-  b = addVector(canvasCenterA, scalarProduct(reflectOver, -400));
+  a = addVector(canvasCenter, scalarProduct(reflectOver, 400));
+  b = addVector(canvasCenter, scalarProduct(reflectOver, -400));
 
   a = movePointToGlobalOrigin(a);
   b = movePointToGlobalOrigin(b);
   addDashedLine(a, b, canvas, black, lineThickness);
-  addPoint(canvasCenterA, canvas, yellow, pointSize);
+  addPoint(canvasCenter, canvas, yellow, pointSize);
 }
 
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 }
 
 function addPolygon(reflect = false) {
   currentObject = "Polygon";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
 
@@ -137,13 +131,11 @@ function addPolygon(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
-  addObject([...nodeArray], blue, ctxA);
 }
 
 function addKite(reflect = false) {
   currentObject = "Kite";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   reflectOver = new Vector(0, 1);
 
@@ -170,14 +162,12 @@ function addKite(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
-  addObject([...nodeArray], blue, ctxA);
 }
 
 function addRectangle(reflect = false) {
   currentObject = "Rectangle";
   reflectOver = new Vector(0, 1);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
 
@@ -201,14 +191,12 @@ function addRectangle(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
-  addObject([...nodeArray], blue, ctxA);
 }
 
 function addTriangle(reflect = false) {
   currentObject = "Triangle";
   reflectOver = new Vector(0, 1);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctxA.clearRect(0, 0, canvasA.width, canvasA.height);
 
   nodeArray = [];
 
@@ -236,5 +224,4 @@ function addTriangle(reflect = false) {
     addObject(reflectObject([...nodeArray]), lightBlue, ctx);
   }
   addObject([...nodeArray], blue, ctx);
-  addObject([...nodeArray], blue, ctxA);
 }

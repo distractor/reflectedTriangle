@@ -1,21 +1,16 @@
 var canvas = document.getElementById("canv");
-var canvasA = document.getElementById("canAxis");
 var ctx = canvas.getContext("2d");
-var ctxA = canvasA.getContext("2d");
 var canvasMouseX;
 var canvasMouseY;
 var canvasOffset = $("#canv").offset();
-var canvasOffsetA = $("#canAxis").offset();
 var offsetX = canvasOffset.left;
 var offsetY = canvasOffset.top;
 var canvasHeight = canvas.height;
 canvasCenter = new Vector(canvas.width * 0.5, -canvasHeight * 0.5);
-var offsetAX = canvasOffsetA.left;
-var offsetAY = canvasOffsetA.top;
-var canvasHeightA = canvasA.height;
-canvasCenterA = new Vector(canvasA.width * 0.5, -canvasHeightA * 0.5);
-
 ctx.strokeStyle = blue;
+
+var reflectOverCenter;
+var reflectOverAxis;
 
 var canvasOrigin = new Vector(0, canvasHeight);
 
@@ -25,18 +20,27 @@ var currentObject = "";
 var radius = 8;
 var reflectOver = new Vector(0, 1);
 
+// Get reflection status
+function readCheckbox() {
+  reflectOverCenter = document.getElementById("centerCheck").checked;
+  reflectOverAxis = document.getElementById("axisCheck").checked;
+}
+
 // Handle mouse down
 function handleMouseDown(e) {
   canvasMouseX = parseInt(e.clientX - offsetX);
   canvasMouseY = parseInt(e.clientY - offsetY);
 
+  readCheckbox();
+
   mousePos = new Vector(canvasMouseX, -canvasMouseY);
 
   // clear canvas
-  $("#Clear").click();
+  clearCanvas();
 
   // replot object
   var reflect = nodeHit(mousePos) != -1;
+  reflect = reflect && reflectOverCenter;
   if (reflect == true) {
     mousePos = nodeArray[nodeHit(mousePos)];
   }
@@ -60,11 +64,18 @@ function handleMouseDown(e) {
   }
 
   // add mirroring line
-  addReflectionLine(mousePos, ctx, orange, lineThickness);
-  // add center point
-  addPoint(canvasCenter, ctx, yellow, pointSize);
-  // axis reflection
-  addAxisSymmetry(mousePos, ctxA, orange, pointSize, lineThickness);
+  if (reflectOverCenter == true) {
+    addReflectionLine(mousePos, ctx, orange, lineThickness);
+    // add center point
+    addPoint(canvasCenter, ctx, yellow, pointSize);
+  }
+  if (reflectOverAxis == true) {
+    // axis reflection
+    addAxisSymmetry(mousePos, ctx, orange, pointSize, lineThickness);
+  }
+  // mous click position
+  addPoint(mousePos, ctx, orange, pointSize);
+  addText("T", mousePos, ctx, orange, fontSize);
 }
 
 // Handle function
